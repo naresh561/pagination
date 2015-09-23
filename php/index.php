@@ -141,39 +141,18 @@ footer {
 		<form class="login-form" action="" method="post">
 			<div style="min-height: 800px;">
 					<h2 style="margin:0;padding:10px 5px;">Pagination</h2>
-				<div>
-					<div id="nav1" class="search_fields" style="margin-bottom: 10px;">
-					<p style="text-align: center;margin:0 0 10px 0;">Search criteria</p>
-					<span>
-						Roll Number <input name="rollnumber" type="text" id='rollnumber' class="change_input">
-						First Name <input name="first_name" type="text" id='first_name' class="change_input">
-						Last Name <input name="last_name" type="text" id='last_name' class="change_input">
-						Email <input name="email" type="text" id='email' class="change_input">
-						Total Marks <input name="marks" type="text"" id='marks' class="change_input">
-					</span>
-					</div>
-					<div class="searchbuttons" style="margin-bottom: 10px;float: right">
-						<input id='reset' type="button" value="Reset" disabled />
-						<input type="button" id="search_button" value="Search" disabled />
-					</div>
-					<div class="clr"></div>
-				</div>
-				<div class="clr"></div>
-				<div id='pagination-div' style="margin-bottom: 10px;float: right;margin-right:10px;margin-top:2px;">
-				</div>
-				<img id="loadingimage" src="img/ajax-loader.gif" alt="loading.." />
 				<table id="customer-data" style="margin-bottom: 10px;width:100%">
 					<input type="hidden" id="sorted_name">
 					<input type="hidden" id="sorted_type">
 					<thead>
 						<tr>
 							<td>#</td>
-							<td class="sortable" id="rollnumber">Roll Number</td>
-							<td class="sortable" id="first_name">First Name</td>
-							<td class="sortable" id="last_name">Last Name</td>
-							<td class="sortable" id="email">Email</td>
-							<td class="sortable" id="gender">Gender</td>
-							<td class="sortable" id="marks">Marks</td>
+							<td class="sortable searchable" data="rollnumber">Roll Number</td>
+							<td class="sortable searchable" data="first_name">First Name</td>
+							<td class="sortable searchable" data="last_name">Last Name</td>
+							<td class="sortable searchable" data="email">Email</td>
+							<td data="gender">Gender</td>
+							<td class="sortable searchable" data="marks">Marks</td>
 						</tr>
 					</thead>
 					<tbody>
@@ -191,76 +170,8 @@ footer {
 <script type="text/javascript">
 var searchURL = 'ajax/searchstudents.php';
 var paginationURL = 'ajax/getstudentsdata.php';
-var $pageno = 1;
-var values = {};
-//Appending row to tbody
-function appendRow(object) {
-	$('#customer-data tbody').empty();
-	if (object == '') {
-	} else {
-		var rowcount=($pageno-1)*document.getElementById('no_of_records').value +1;
-		for ( i = 0; i < object.length; i++) {
-			var newrow = "<tr><td>"+(rowcount++)+"</td><td>"
-					+ object[i]['rollnumber']
-					+ "</td><td>"
-					+ object[i]['first_name']
-					+ "</td><td>"
-					+ object[i]['last_name']
-					+ "</td><td>"
-					+ object[i]['email']
-					+ "</td><td>"
-					+ object[i]['gender']
-					+ "</td><td>"
-					+ object[i]['marks']
-					+ "</td></tr>";
-			$(newrow).appendTo($("#customer-data tbody"));
-			$('td').each(function() {
-				if ($(this).text() == 'null') {
-					$(this).text('');
-				}
-			});
-		}
-	}
-	$('#loadingimage').css('display', 'none');
-}
-
-
-
 $(document).ready(function(){
-$('.change_input').bind('change keyup',function(e){
-		if (e.which == 13) {
-			e.preventDefault();
-			$('#search_button').click();
-			return;
-		}
-	   var flag = false;
-	   $('.change_input').each(function(){
-		   if($(this).val().length > 0){
-			   flag = true;
-			   $("#reset").attr('disabled',false);
-			   $("#search_button").attr('disabled',false);
-		   }
-	   });
-	   if(!flag){
-		   $("#reset").attr('disabled',true);
-		   $("#search_button").attr('disabled',true);
-	   }
-});
-	// Searching by enter button
-	$('#search_button').on('click',function(){
-		$(this).attr('disabled',true);
-		 searching();
-	});
 	init();
-	$('#search_button').click();
-});
-$('#reset').on('click',function(){
-	$search_inputs = $('.search_fields').find('input');
-	$($search_inputs).each(function(){
-		$(this).val('');
-	});
-	$('#no_of_records').val(10);
-	$('#search_button').click();
 });
 </script>
 </html>

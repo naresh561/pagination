@@ -1,8 +1,52 @@
 var totalRecords = 0;
 var $pageno = 1;
+var values = {};
 function init(){
-	$('#pagination-div').html('<input class="pagesize" type="text" id="no_of_records" placeholder="# of records" /> <i class="fa fa-angle-double-left first"></i> <i class="fa fa-angle-left prev"></i> <input type="text" class="pagedisplay" readonly="readonly" /> <i class="fa fa-angle-right next"></i> <i class="fa fa-angle-double-right last"></i>');
+	var paginationfieldsgenerationstring ='<input class="pagesize" type="text" id="no_of_records" placeholder="# of records" /> <i class="fa fa-angle-double-left first"></i> <i class="fa fa-angle-left prev"></i> <input type="text" class="pagedisplay" readonly="readonly" /> <i class="fa fa-angle-right next"></i> <i class="fa fa-angle-double-right last"></i>';
+	var searchfieldsgenerationstring = "";
+	$(".sortable").each(function(){
+		searchfieldsgenerationstring += $(this).html() +' <input type="text" data="'+$(this).attr('data')+'" class="change_input"/>';
+	});
 	
+	var searchfieldsdiv = '<div id="nav1" class="search_fields" style="margin-bottom: 10px;"><p style="text-align: center;margin:0 0 10px 0;">Search criteria</p><span>'+searchfieldsgenerationstring+'</span></div><div class="searchbuttons" style="margin-bottom: 10px;float: right"><input id="reset" type="button" style="margin-right: 10px;" value="Reset" disabled /><input type="button" id="search_button" value="Search" disabled /></div><div class="clr"></div>';
+	var fields = '<div id="search-div">' +searchfieldsdiv+'</div><div class="clr"></div>'+
+	'<div id="pagination-div" style="margin-bottom: 10px;float: right;margin-right:10px;margin-top:2px;">'+paginationfieldsgenerationstring+'</div><img id="loadingimage" src="img/ajax-loader.gif" alt="loading.." />';
+	
+	$(fields).insertBefore($('.sortable').parentsUntil( $( "table" )).parent()[0]);
+	$('.change_input').bind('change keyup',function(e){
+		if (e.which == 13) {
+			e.preventDefault();
+			$('#search_button').click();
+			return;
+		}
+	   var flag = false;
+	   $('.change_input').each(function(){
+		   if($(this).val().length > 0){
+			   flag = true;
+			   $("#reset").attr('disabled',false);
+			   $("#search_button").attr('disabled',false);
+		   }
+	   });
+	   if(!flag){
+		   $("#reset").attr('disabled',true);
+		   $("#search_button").attr('disabled',true);
+	   }
+	});
+	
+
+	$('#reset').on('click',function(){
+		$search_inputs = $('.search_fields').find('input');
+		$($search_inputs).each(function(){
+			$(this).val('');
+		});
+		$('#no_of_records').val(10);
+		$('#search_button').click();
+	});
+	// Searching by enter button
+	$('#search_button').on('click',function(){
+		$(this).attr('disabled',true);
+		 searching();
+	});
 	// Key press pagination
 	$('#no_of_records').on('keyup blur',function(e) {
 		if($(this).val() == '') return;
@@ -37,6 +81,7 @@ function init(){
 		if($pageno > 1)
 		pagination(1);
 	});
+	$('#search_button').click();
 }
 
 // Appending row to tbody
@@ -64,7 +109,7 @@ function pagination(pageno) {
 		type: "POST",
 		dataType : "json",
 		success : function(result) {
-			appendRow(result['data']);
+			appendRow1(result['data']);
 			$('#loadingimage').css('display', 'none');
 		},
 		error : function(error) {
@@ -91,7 +136,6 @@ function searching() {
 			if(totalRecords > 0){
 				if(totalRecords>10)	{
 					if (isNaN($('#no_of_records').val()) || $('#no_of_records').val() == 0) $('#no_of_records').val(10);
-					console.log($('#no_of_records').val());
 				}
 				else $('#no_of_records').val(totalRecords);
 				$(".sortable").append(' <i class="fa fa-sort"></i>');
@@ -105,19 +149,21 @@ function searching() {
 					var itag = $(this).find( "i" );
 					var sortimage = $(itag).attr('class');
 					var classes = sortimage.split(" ");
-					$('#sorted_name').val($(this).attr('id'));
+					$('#sorted_name').val($(this).attr('data'));
+					values.orderby = $(this).attr('data');
 					if(classes[1] == "fa-sort" || classes[1] == "fa-sort-amount-desc"){
 						$(itag).attr('class','fa fa-sort-amount-asc');
 						$('#sorted_type').val('ASC');
+						values.ordertype = 'ASC';
 					}
 					else {
 						$(itag).attr('class','fa fa-sort-amount-desc');
 						$('#sorted_type').val('DESC');
+						values.ordertype = 'DESC';
 					}
 					pagination(1);
 				});
 				pagination(1);
-
 			}
 			else {
 				$('#loadingimage').css('display', 'none');
@@ -137,14 +183,39 @@ function searching() {
 function getValues() {
 	$search_inputs = $('.search_fields').find('input');
 	$($search_inputs).each(function(){
-		values[$(this).attr('id')] = $(this).val();
+		values[$(this).attr('data')] = $(this).val();
 	});
-	values.orderby = document.getElementById('sorted_name').value;
-	values.ordertype = document.getElementById('sorted_type').value;
-	values.perpage = document.getElementById('no_of_records').value;
+	values.orderby = $('#sorted_name').val();
+	values.ordertype = $('#sorted_type').val();
+	values.perpage = $('#no_of_records').val();
 	if (isNaN(values.perpage) || values.perpage == 0) {
 		values.perpage = 10;
-		document.getElementById('no_of_records').value = 10;
+		$('#no_of_records').val(10);
 	}
 	return values;
+}
+function appendRow1(object) {
+	$('#customer-data tbody').empty();
+	if (object == '') {
+	} else {
+		var rowcount=($pageno-1)*document.getElementById('no_of_records').value +1;
+		for ( i = 0; i < object.length; i++) {
+			var newrow = "<tr><td>"+(rowcount++)+"</td>"
+			$table = $('.sortable').parentsUntil( $( "table" )).parent();
+			$tr = ($table).find('thead > tr > td');
+			($tr).each(function(){
+				var attr = $(this).attr('data');
+				if (typeof attr !== typeof undefined && attr !== false) {
+					newrow += "<td>"+ object[i][attr]+ "</td>";
+				}
+			});
+			$(newrow+"</tr>").appendTo($("#customer-data tbody"));
+			$('td').each(function() {
+				if ($(this).text() == 'null') {
+					$(this).text('');
+				}
+			});
+		}
+	}
+	$('#loadingimage').css('display', 'none');
 }
