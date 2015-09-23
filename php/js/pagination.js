@@ -109,7 +109,7 @@ function pagination(pageno) {
 		type: "POST",
 		dataType : "json",
 		success : function(result) {
-			appendRow1(result['data']);
+			appendRow(result['data']);
 			$('#loadingimage').css('display', 'none');
 		},
 		error : function(error) {
@@ -194,7 +194,7 @@ function getValues() {
 	}
 	return values;
 }
-function appendRow1(object) {
+function appendRow(object) {
 	$('#customer-data tbody').empty();
 	if (object == '') {
 	} else {
