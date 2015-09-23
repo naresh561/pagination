@@ -160,13 +160,6 @@ footer {
 				</div>
 				<div class="clr"></div>
 				<div id='pagination-div' style="margin-bottom: 10px;float: right;margin-right:10px;margin-top:2px;">
-					<input class="pagesize" type="text" id='no_of_records'
-						placeholder="# of records" /> <i
-						class="fa fa-angle-double-left first"></i> <i
-						class="fa fa-angle-left prev"></i> <input type="text"
-						class="pagedisplay" readonly="readonly" /> <i
-						class="fa fa-angle-right next"></i> <i
-						class="fa fa-angle-double-right last"></i>
 				</div>
 				<img id="loadingimage" src="img/ajax-loader.gif" alt="loading.." />
 				<table id="customer-data" style="margin-bottom: 10px;width:100%">
@@ -196,8 +189,8 @@ footer {
 <script src="js/jquery-2.0.3.min.js"></script>
 <script src="js/pagination.js"></script>
 <script type="text/javascript">
-var searchURL = 'ajax/addOrders.php';
-var paginationURL = 'ajax/retrievesubdomains.php';
+var searchURL = 'ajax/searchstudents.php';
+var paginationURL = 'ajax/getstudentsdata.php';
 var $pageno = 1;
 var values = {};
 //Appending row to tbody

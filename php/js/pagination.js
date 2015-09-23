@@ -1,6 +1,8 @@
 var totalRecords = 0;
 var $pageno = 1;
 function init(){
+	$('#pagination-div').html('<input class="pagesize" type="text" id="no_of_records" placeholder="# of records" /> <i class="fa fa-angle-double-left first"></i> <i class="fa fa-angle-left prev"></i> <input type="text" class="pagedisplay" readonly="readonly" /> <i class="fa fa-angle-right next"></i> <i class="fa fa-angle-double-right last"></i>');
+	
 	// Key press pagination
 	$('#no_of_records').on('keyup blur',function(e) {
 		if($(this).val() == '') return;
