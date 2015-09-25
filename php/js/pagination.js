@@ -2,6 +2,9 @@ var totalRecords = 0;
 var $pageno = 1;
 var values = {};
 function init(){
+	$table = $('.sortable,.searchable').parentsUntil( $( "table" )).parent();
+	$($table).has('thead').addClass('pagination_table');
+	
 	var paginationfieldsgenerationstring ='<input class="pagesize" type="text" id="no_of_records" placeholder="# of records" /> <i class="fa fa-angle-double-left first"></i> <i class="fa fa-angle-left prev"></i> <input type="text" class="pagedisplay" readonly="readonly" /> <i class="fa fa-angle-right next"></i> <i class="fa fa-angle-double-right last"></i>';
 	var searchfieldsgenerationstring = "";
 	$(".sortable").each(function(){
@@ -167,8 +170,7 @@ function searching() {
 			}
 			else {
 				$('#loadingimage').css('display', 'none');
-				$('#customer-data tbody').empty();
-				$('#customer-data tbody').append('<tr><td  colspan="100%" align="center">No records found</td></tr>');
+				$('.pagination_table').find('tbody').empty().append('<tr><td  colspan="100%" align="center">No records found</td></tr>');
 				$("#pagination-div").hide();
 			}
 
@@ -195,15 +197,14 @@ function getValues() {
 	return values;
 }
 function appendRow(object) {
-	$('#customer-data tbody').empty();
 	if (object == '') {
 	} else {
 		var rowcount=($pageno-1)*document.getElementById('no_of_records').value +1;
+		$tr = $('.pagination_table').find('thead > tr > td');
+		$('.pagination_table').find('tbody').empty();
 		for ( i = 0; i < object.length; i++) {
 			var newrow = "<tr><td>"+(rowcount++)+"</td>"
-			$table = $('.sortable').parentsUntil( $( "table" )).parent();
-			$tr = ($table).find('thead > tr > td');
-			($tr).each(function(){
+			$($tr).each(function(){
 				var attr = $(this).attr('data');
 				if (typeof attr !== typeof undefined && attr !== false) {
 					newrow += "<td>"+ object[i][attr]+ "</td>";
