@@ -15,7 +15,7 @@ function init(){
 	var fields = '<div id="search-div">' +searchfieldsdiv+'</div><div class="clr"></div>'+
 	'<div id="pagination-div" style="margin-bottom: 10px;float: right;margin-right:10px;margin-top:2px;">'+paginationfieldsgenerationstring+'</div><img id="loadingimage" src="img/ajax-loader.gif" alt="loading.." />';
 	
-	$(fields).insertBefore($('.sortable').parentsUntil( $( "table" )).parent()[0]);
+	$(fields).insertBefore($('.pagination_table'));
 	$('.change_input').bind('change keyup',function(e){
 		if (e.which == 13) {
 			e.preventDefault();
