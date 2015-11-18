@@ -6,11 +6,11 @@ class dbOperations extends configuration{
 	//returns all the sub-categories with ids from sub_service table for a particular service id 
 	public function search($search_array){
 		try {
-			$selectQuery = "SELECT count(*) as count FROM $this->tableName WHERE" ;
+			$selectQuery = "SELECT count(*) as count FROM $this->tableName" ;
 			$search_conditions = '';
 			foreach ($search_array as $key =>$value)
 			if($search_conditions == "")
-				$search_conditions = " `$key` LIKE '%$value%'";
+				$search_conditions = "WHERE `$key` LIKE '%$value%'";
 			else
 				$search_conditions .= " AND `$key` LIKE '%$value%'";
 			$objConnection = $this->Connect();
@@ -26,11 +26,11 @@ class dbOperations extends configuration{
 	
 	public function pagination($search_array,$pageination_data){
 		try {
-			$selectQuery = "SELECT * FROM $this->tableName WHERE" ;
+			$selectQuery = "SELECT * FROM $this->tableName" ;
 			$search_conditions = "";
 			foreach ($search_array as $key =>$value)
 				if($search_conditions == "")
-					$search_conditions = " `$key` LIKE '%$value%'";
+					$search_conditions = " WHERE `$key` LIKE '%$value%'";
 				else
 					$search_conditions .= " AND `$key` LIKE '%$value%'";
 				if($pageination_data['orderby'] != "") $search_conditions .= " ORDER BY ".$pageination_data['orderby']." ".$pageination_data['ordertype'];

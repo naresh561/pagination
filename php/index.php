@@ -139,6 +139,10 @@ footer {
 	border-bottom: 1px solid #cbcbcb;
 	background-color: #fff;
 }
+td i{
+	float:right;
+	padding-right:5px;
+}
 </style>
 <body>
 	<div class="wrapper" style="width:70%;margin:0 auto;">

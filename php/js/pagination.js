@@ -7,7 +7,7 @@ function init(){
 	
 	var paginationfieldsgenerationstring ='<input class="pagesize" type="text" id="no_of_records" placeholder="# of records" /> <i class="fa fa-angle-double-left first"></i> <i class="fa fa-angle-left prev"></i> <input type="text" class="pagedisplay" readonly="readonly" /> <i class="fa fa-angle-right next"></i> <i class="fa fa-angle-double-right last"></i>';
 	var searchfieldsgenerationstring = "";
-	$(".sortable").each(function(){
+	$(".searchable").each(function(){
 		searchfieldsgenerationstring += $(this).html() +' <input type="text" data="'+$(this).attr('data')+'" class="change_input"/> ';
 	});
 	
@@ -84,7 +84,7 @@ function init(){
 		if($pageno > 1)
 		pagination(1);
 	});
-	$('#search_button').click();
+	searching();
 }
 
 // Appending row to tbody
@@ -112,10 +112,12 @@ function pagination(pageno) {
 		type: "POST",
 		dataType : "json",
 		success : function(result) {
+			console.log(result);
 			appendRow(result['data']);
 			$('#loadingimage').css('display', 'none');
 		},
 		error : function(error) {
+			console.log(error);
 			$('#loadingimage').css('display', 'none');
 		}
 	});
