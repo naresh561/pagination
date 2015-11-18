@@ -89,6 +89,10 @@ table thead tr th, table thead tr td {
 	text-align: left;
 }
 
+table thead tr th:last-child, table thead tr td:last-child {
+	border-right: 0px;
+}
+
 table tbody tr td {
 	font-family: 'Segoe UI Semilight', 'Open Sans', Verdana, Arial,
 		Helvetica, sans-serif;

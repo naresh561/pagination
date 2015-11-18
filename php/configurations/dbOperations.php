@@ -7,7 +7,7 @@ class dbOperations extends configuration{
 	public function search($search_array){
 		try {
 			$selectQuery = "SELECT count(*) as count FROM $this->tableName WHERE" ;
-			$search_conditions = $search_array[''];
+			$search_conditions = '';
 			foreach ($search_array as $key =>$value)
 			if($search_conditions == "")
 				$search_conditions = " `$key` LIKE '%$value%'";

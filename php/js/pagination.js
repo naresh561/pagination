@@ -8,10 +8,10 @@ function init(){
 	var paginationfieldsgenerationstring ='<input class="pagesize" type="text" id="no_of_records" placeholder="# of records" /> <i class="fa fa-angle-double-left first"></i> <i class="fa fa-angle-left prev"></i> <input type="text" class="pagedisplay" readonly="readonly" /> <i class="fa fa-angle-right next"></i> <i class="fa fa-angle-double-right last"></i>';
 	var searchfieldsgenerationstring = "";
 	$(".sortable").each(function(){
-		searchfieldsgenerationstring += $(this).html() +' <input type="text" data="'+$(this).attr('data')+'" class="change_input"/>';
+		searchfieldsgenerationstring += $(this).html() +' <input type="text" data="'+$(this).attr('data')+'" class="change_input"/> ';
 	});
 	
-	var searchfieldsdiv = '<div id="nav1" class="search_fields" style="margin-bottom: 10px;"><p style="text-align: center;margin:0 0 10px 0;">Search criteria</p><span>'+searchfieldsgenerationstring+'</span></div><div class="searchbuttons" style="margin-bottom: 10px;float: right"><input id="reset" type="button" style="margin-right: 10px;" value="Reset" disabled /><input type="button" id="search_button" value="Search" disabled /></div><div class="clr"></div>';
+	var searchfieldsdiv = '<div id="nav1" class="search_fields" style="margin-bottom: 10px;"><p style="text-align: center;margin:0 0 10px 0;">Search criteria</p><span>'+searchfieldsgenerationstring+'</span></div><div class="searchbuttons" style="margin-bottom: 10px;float: right;margin-right: 10px;"><input id="reset" type="button" style="margin-right: 10px;" value="Reset" disabled /><input type="button" id="search_button" value="Search" disabled/></div><div class="clr"></div>';
 	var fields = '<div id="search-div">' +searchfieldsdiv+'</div><div class="clr"></div>'+
 	'<div id="pagination-div" style="margin-bottom: 10px;float: right;margin-right:10px;margin-top:2px;">'+paginationfieldsgenerationstring+'</div><img id="loadingimage" src="img/ajax-loader.gif" alt="loading.." />';
 	
@@ -197,8 +197,7 @@ function getValues() {
 	return values;
 }
 function appendRow(object) {
-	if (object == '') {
-	} else {
+	if (object != '') {
 		var rowcount=($pageno-1)*document.getElementById('no_of_records').value +1;
 		$tr = $('.pagination_table').find('thead > tr > td');
 		$('.pagination_table').find('tbody').empty();
