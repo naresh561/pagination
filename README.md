@@ -6,6 +6,7 @@ USAGE:
 2. add a class "searchable" or "sortable" or both to your table header.
 3. add data attr to each header in such a way that the value should be a key in json data.
 4. difine options object 
+
    ex
         options = {
     		recodsPerPage : 10, // optional by defult 10;
