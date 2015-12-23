@@ -1,11 +1,33 @@
-var totalRecords = 0;
-var $pageno = 1;
-var values = {};
+paginationTypeObject = {"arrowApproach":0,"buttonApproch":1};
+function Paginator(options){
+	this.validatefield = function(value){
+		if(typeof value === 'undefined') return false;
+		if (isNaN(value)) return false;
+		return true;
+	}
+	
+	this.recodsPerPage = this.validatefield(options.recodsPerPage) ? options.recodsPerPage : 10;
+	this.paginationType = (this.validatefield(options.paginationType) && options.paginationType < 2 && options.paginationType >= 0)? options.paginationType : paginationTypeObject.arrowApproach;
+	this.searchURL = options.searchURL;
+	this.paginationURL = options.paginationURL;
+	this.buttonsCount = this.validatefield(options.buttonsCount) ? options.buttonsCount : 5;
+	this.totalRecords = 0;
+	this.currentPageNo = 1;
+	this.values = {};
+	this.totalPagescount = 0;
+	this.paginate = init;
+	this.getValues = getValues;
+	this.searching = searching;
+	this.createButtons = createButtons;
+	this.pagination = pagination;
+	this.appendRow = appendRow;
+}
 function init(){
+	var object = this;
 	$table = $('.sortable,.searchable').parentsUntil( $( "table" )).parent();
 	$($table).has('thead').addClass('pagination_table');
 	
-	var paginationfieldsgenerationstring ='<input class="pagesize" type="text" id="no_of_records" placeholder="# of records" /> <i class="fa fa-angle-double-left first"></i> <i class="fa fa-angle-left prev"></i> <input type="text" class="pagedisplay" readonly="readonly" /> <i class="fa fa-angle-right next"></i> <i class="fa fa-angle-double-right last"></i>';
+	var paginationfieldsgenerationstring = (this.paginationType == paginationTypeObject.arrowApproach) ? '<input class="pagesize" type="text" id="no_of_records" placeholder="# of records" value='+object.recodsPerPage+' /> <i class="fa fa-angle-double-left first"></i> <i class="fa fa-angle-left prev"></i> <input type="text" class="pagedisplay" readonly="readonly" /> <i class="fa fa-angle-right next"></i> <i class="fa fa-angle-double-right last"></i>' : '<input class="pagesize" type="text" id="no_of_records" placeholder="# of records" value='+object.recodsPerPage+' />';
 	var searchfieldsgenerationstring = "";
 	$(".searchable").each(function(){
 		searchfieldsgenerationstring += $(this).html() +' <input type="text" data="'+$(this).attr('data')+'" class="change_input"/> ';
@@ -13,11 +35,12 @@ function init(){
 	
 	var searchfieldsdiv = "";
 	if(searchfieldsgenerationstring != "")
-	searchfieldsdiv = '<div id="nav1" class="search_fields" style="margin-bottom: 10px;"><p style="text-align: center;margin:0 0 10px 0;">Search criteria</p><span>'+searchfieldsgenerationstring+'</span></div><div class="searchbuttons" style="margin-bottom: 10px;float: right;margin-right: 10px;"><input id="reset" type="button" style="margin-right: 10px;" value="Reset" disabled /><input type="button" id="search_button" value="Search" disabled/></div><div class="clr"></div>';
+		searchfieldsdiv = '<div id="nav1" class="search_fields" style="margin-bottom: 10px;"><p style="text-align: center;margin:0 0 10px 0;">Search criteria</p><span>'+searchfieldsgenerationstring+'</span></div><div class="searchbuttons" style="margin-bottom: 10px;float: right;margin-right: 10px;"><input id="reset" type="button" style="margin-right: 10px;" value="Reset" disabled /><input type="button" id="search_button" value="Search" disabled/></div><div class="clr"></div>';
 	var fields = '<div id="search-div">' +searchfieldsdiv+'</div><div class="clr"></div>'+
 	'<div id="pagination-div" style="margin-bottom: 10px;float: right;margin-right:10px;margin-top:2px;">'+paginationfieldsgenerationstring+'</div><img id="loadingimage" src="img/ajax-loader.gif" alt="loading.." />';
 	
 	$(fields).insertBefore($('.pagination_table'));
+	
 	$('.change_input').bind('change keyup',function(e){
 		if (e.which == 13) {
 			e.preventDefault();
@@ -38,84 +61,107 @@ function init(){
 	   }
 	});
 	
-
 	$('#reset').on('click',function(){
 		$search_inputs = $('.search_fields').find('input');
 		$($search_inputs).each(function(){
 			$(this).val('');
 		});
+		object.recodsPerPage = 10;
 		$('#no_of_records').val(10);
 		$('#search_button').click();
 	});
 	// Searching by enter button
 	$('#search_button').on('click',function(){
 		$(this).attr('disabled',true);
-		 searching();
+		 object.searching();
 	});
 	// Key press pagination
 	$('#no_of_records').on('keyup blur',function(e) {
 		if($(this).val() == '') return;
 		if (isNaN($(this).val()) || $(this).val() == 0) {
-			if(totalRecords > 0){
-				if(totalRecords>10)	$('#no_of_records').val(10);
-				else $('#no_of_records').val(totalRecords);
+			if(object.totalRecords > 0){
+				if(object.totalRecords>10)	$('#no_of_records').val(10);
+				else $('#no_of_records').val(object.totalRecords);
 			}
 		}
-		values.perpage = $(this).val();
-		pagination(1);
+		object.recodsPerPage = $(this).val();
+		object.totalPagescount = Math.ceil(object.totalRecords / object.recodsPerPage);
+		object.createButtons(1,object.totalPagescount);
 	});
 	
 	// Pagination : Next Page
 	$(".next").on('click', function() {
-		if ($pageno < $no_pages) {
-			pagination(++$pageno);
-		}
+		if (object.currentPageNo < object.totalPagescount) object.createButtons(++object.currentPageNo , object.totalPagescount);
 	});
 	// Pagination : Previous Page
 	$(".prev").on('click', function() {
-		if ($pageno > 1) {
-			pagination(--$pageno);
-		}
+		if (object.currentPageNo > 1) object.createButtons(--object.currentPageNo , object.totalPagescount);
 	});
 	// Pagination : Last Page
 	$(".last").on('click', function() {
-		if ($pageno < $no_pages) pagination($no_pages);
+		if (object.currentPageNo < object.totalPagescount) object.createButtons(object.totalPagescount , object.totalPagescount);
 	});
 	// Pagination : First Page
 	$(".first").on('click', function() {
-		if($pageno > 1)
-		pagination(1);
+		if(object.currentPageNo > 1) object.createButtons(1 , object.totalPagescount);
 	});
-	searching();
+	object.searching();
 }
-
-// Appending row to tbody
-function pad(s) { return (s < 10) ? '0' + s : s; }
-
-function pagination(pageno) {
-	$('#loadingimage').css('display', 'block');
-	$pageno = pageno;
-	$records_per_page = $('#no_of_records').val();
-	if (isNaN($records_per_page) || $records_per_page == 0) {
-		if(totalRecords > 0){
-			if(totalRecords>10)	$records_per_page = 10;
-			else $records_per_page = totalRecords;
+function createButtons(currentpage , pages){
+	var object = this;
+	if(object.paginationType == paginationTypeObject.buttonApproch){
+		var Buttons = (pages < object.buttonsCount) ? pages : object.buttonsCount;
+		var rightPages = midPage = Math.floor(Buttons/2);
+		if(currentpage - rightPages < 1) rightPages = currentpage -1;
+		var leftPages = Buttons - ( parseInt(rightPages) + 1);
+		if(parseInt(currentpage) + parseInt(leftPages) >  pages){
+			leftPages = pages - currentpage;
+			rightPages = rightPages + (midPage - leftPages);
+			if(currentpage - rightPages < 1) rightPages = currentpage -1;
 		}
-		$pageno = 1;
-		$('#no_of_records').val($records_per_page);
+		var firstButton = '<ul class="pagination" style="float:right"><li class="firstButton"><a href="#" aria-label="Previous" data-pageno = 1 class="bootpag"><span aria-hidden="true">&laquo;</span></a></li>';
+		var rightButtons = leftbuttons = "";
+		var lastButton = '<li class="lastButton"><a href="#" aria-label="Next" class="bootpag" data-pageno = '+pages+'><span aria-hidden="true">&raquo;</span></a></li></ul>';
+		for(var i = 0 ; i < rightPages; i++){
+			var datapageno = currentpage - rightPages + i; 
+			rightButtons += '<li><a href="#" data-pageno = '+ (datapageno) +' class="bootpag">'+ (datapageno)+'</a></li>';
+		}
+		for(var i = 1 ; i <= leftPages; i++){
+			var datapageno = parseInt(currentpage) + parseInt(i); 
+			leftbuttons += '<li><a href="#" data-pageno = '+ (datapageno) +' class="bootpag">'+ (datapageno) +'</a></li>';
+		}
+		var currentButton = '<li class="active"><a href="#" class="bootpag">'+currentpage+'</a></li>';
+		
+		var bootpag = firstButton + rightButtons + currentButton + leftbuttons + lastButton;
+		$(".pagination").remove();
+		$(bootpag).insertAfter($('.pagination_table'));
+		$('.bootpag').unbind();
+		$('.bootpag').click(function(e){
+			e.preventDefault();
+			if (isNaN($(this).attr('data-pageno')) || $(this).attr('data-pageno') == 0) return;
+			object.createButtons($(this).attr('data-pageno'), pages);
+			
+		});
+		if(currentpage == 1) $(".firstButton").addClass('disabled');
+		else $(".firstButton").removeClass('disabled');
+		if(currentpage == pages) $(".lastButton").addClass('disabled');
+		else $(".lastButton").removeClass('disabled');
 	}
-	$no_pages = Math.ceil(totalRecords / $records_per_page);
-	$(".pagedisplay").val($pageno + "/" + $no_pages);
-	var jsondata = values;
-	jsondata.pageno = $pageno;
+	object.pagination(currentpage);
+}
+function pagination(pageno) {
+	var object = this;
+	$('#loadingimage').css('display', 'block');
+	object.currentPageNo = pageno;
+	$(".pagedisplay").val(object.currentPageNo + "/" + object.totalPagescount);
+	var jsondata = object.getValues();
 	$.ajax({
-		url : paginationURL,
+		url : object.paginationURL,
 		data : jsondata,
 		type: "POST",
 		dataType : "json",
 		success : function(result) {
-			console.log(result);
-			appendRow(result['data']);
+			object.appendRow(result['data']);
 			$('#loadingimage').css('display', 'none');
 		},
 		error : function(error) {
@@ -124,85 +170,78 @@ function pagination(pageno) {
 		}
 	});
 }
-
 // Searching
 function searching() {
+	var object = this;
 	$(".sortable").find('i').remove();
-	$('#sorted_name').val('');
+	object.values.orderby = "";
+	object.values.ordertype = "";
 	$(".sortable").removeClass('sort');
 	$('#loadingimage').css('display', 'block');
 	$("#pagination-div").show();
-	var jsondata = getValues();
+	var jsondata = object.getValues();
 	$.ajax({
-		url : searchURL,
+		url : object.searchURL,
 		data : jsondata,
 		type: "POST",
 		dataType : "json",
 		success : function(result) {
-			totalRecords = result.data;
-			if(totalRecords > 0){
-				if(totalRecords>10)	{
-					if (isNaN($('#no_of_records').val()) || $('#no_of_records').val() == 0) $('#no_of_records').val(10);
+			object.totalRecords = result.data;
+			if(object.totalRecords > 0){
+				if(object.totalRecords < 10)	{
+					$('#no_of_records').val(object.totalRecords);
+					object.recodsPerPage = object.totalRecords;
 				}
-				else $('#no_of_records').val(totalRecords);
+				object.totalPagescount = Math.ceil(parseInt(object.totalRecords) / $('#no_of_records').val());
 				$(".sortable").append(' <i class="fa fa-sort"></i>');
 				$(".sortable").addClass('sort');
 				$(".sort").unbind('click');
 				$('.sort').on('click', function() {
-					if( totalRecords < 1 ) return;
+					if( object.totalRecords < 1 ) return;
 					$('#loadingimage').css('display', 'block');
 					$(this).siblings().removeClass('selected');
 					$(this).siblings().find("i").attr('class', '').addClass('fa fa-sort');
 					var itag = $(this).find( "i" );
 					var sortimage = $(itag).attr('class');
 					var classes = sortimage.split(" ");
-					$('#sorted_name').val($(this).attr('data'));
-					values.orderby = $(this).attr('data');
+					object.values.orderby = $(this).attr('data');
 					if(classes[1] == "fa-sort" || classes[1] == "fa-sort-amount-desc"){
 						$(itag).attr('class','fa fa-sort-amount-asc');
-						$('#sorted_type').val('ASC');
-						values.ordertype = 'ASC';
+						object.values.ordertype = 'ASC';
 					}
 					else {
 						$(itag).attr('class','fa fa-sort-amount-desc');
-						$('#sorted_type').val('DESC');
-						values.ordertype = 'DESC';
+						object.values.ordertype = 'DESC';
 					}
-					pagination(1);
+					object.createButtons(1,object.totalPagescount);
 				});
-				pagination(1);
+				object.createButtons(1,object.totalPagescount);
 			}
 			else {
 				$('#loadingimage').css('display', 'none');
 				$('.pagination_table').find('tbody').empty().append('<tr><td  colspan="100%" align="center">No records found</td></tr>');
 				$("#pagination-div").hide();
 			}
-
 		},
 		error : function(error) {
 			$('#loadingimage').css('display', 'none');
 		}
 	});
 }
-
 // To get input from text fields
 function getValues() {
 	$search_inputs = $('.search_fields').find('input');
+	var object = this;
 	$($search_inputs).each(function(){
-		values[$(this).attr('data')] = $(this).val();
+		object.values[$(this).attr('data')] = $(this).val();
 	});
-	values.orderby = $('#sorted_name').val();
-	values.ordertype = $('#sorted_type').val();
-	values.perpage = $('#no_of_records').val();
-	if (isNaN(values.perpage) || values.perpage == 0) {
-		values.perpage = 10;
-		$('#no_of_records').val(10);
-	}
-	return values;
+	object.values.pageno = object.currentPageNo;
+	object.values.perpage = object.recodsPerPage;
+	return object.values;
 }
 function appendRow(object) {
 	if (object != '') {
-		var rowcount=($pageno-1)*document.getElementById('no_of_records').value +1;
+		var rowcount=(this.currentPageNo-1)*this.recodsPerPage + 1;
 		$tr = $('.pagination_table').find('thead > tr > td');
 		$('.pagination_table').find('tbody').empty();
 		for ( i = 0; i < object.length; i++) {
@@ -213,7 +252,7 @@ function appendRow(object) {
 					newrow += "<td>"+ object[i][attr]+ "</td>";
 				}
 			});
-			$(newrow+"</tr>").appendTo($("#customer-data tbody"));
+			$(newrow+"</tr>").appendTo($(".pagination_table tbody"));
 			$('td').each(function() {
 				if ($(this).text() == 'null') {
 					$(this).text('');

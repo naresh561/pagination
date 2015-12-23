@@ -9,6 +9,7 @@
 	href='https://fonts.googleapis.com/css?family=Roboto:300,700&amp;subset=latin,latin-ext'
 	rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css" />
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <style>
 html, body {
@@ -51,7 +52,7 @@ input[type="button"]:disabled {
 
 input[type='text'] {
 	width: 130px;
-	height: 15px;
+	height: 30px;
 	padding: 6px 12px;
 	font-size: 14px;
 	line-height: 1.42857143;
@@ -150,8 +151,6 @@ td i{
 			<div style="min-height: 800px;">
 					<h2 style="margin:0;padding:10px 5px;">Pagination</h2>
 				<table id="customer-data" style="margin-bottom: 10px;width:100%">
-					<input type="hidden" id="sorted_name">
-					<input type="hidden" id="sorted_type">
 					<thead>
 						<tr>
 							<td>#</td>
@@ -169,17 +168,24 @@ td i{
 			</div>
 		</form>
 	<footer>
-		<div class="clr"><span style="">&copy;<a href='http://www.flyingfiveinc.com/' target='_blank'>Flying Five</a> | Naresh Penugurthi |</span><span style="float:right">Version 1.0</span></div>
+		<div class="clr"><span style="">&copy;<a href='http://www.flyingfiveinc.com/' target='_blank'>Flying Five</a> | Naresh Penugurthi |</span><span style="float:right">Version 2.0</span></div>
 	</footer>
 	</div>
 </body>
 <script src="js/jquery-2.0.3.min.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
 <script src="js/pagination.js"></script>
 <script type="text/javascript">
-var searchURL = 'ajax/searchstudents.php';
-var paginationURL = 'ajax/getstudentsdata.php';
 $(document).ready(function(){
-	init();
+	options = {
+		recodsPerPage : 10,
+		paginationType : 0,
+		searchURL : 'ajax/searchstudents.php',
+		paginationURL : 'ajax/getstudentsdata.php',
+		buttonsCount : 8
+	};
+	var paginator = new Paginator(options);
+	paginator.paginate();
 });
 </script>
 </html>
