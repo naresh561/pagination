@@ -179,7 +179,7 @@ td i{
 $(document).ready(function(){
 	options = {
 		recodsPerPage : 10,
-		paginationType : 0,
+		paginationType : paginationTypeObject.arrowApproach,
 		searchURL : 'ajax/searchstudents.php',
 		paginationURL : 'ajax/getstudentsdata.php',
 		buttonsCount : 8
