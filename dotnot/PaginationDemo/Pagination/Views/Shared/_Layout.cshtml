@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/themes/base/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="wrapper" style="width:70%;margin:0 auto;">
+        @RenderBody()
+
+        @Scripts.Render("~/bundles/jquery")
+        @RenderSection("scripts", required: false)
+        <footer>
+            <div class="clr"><span style="">&copy;<a href='http://www.flyingfiveinc.com/' target='_blank'>Flying Five</a> | Naresh Penugurthi |</span><span style="float:right">Version 2.0</span></div>
+        </footer>
+        <script>
+            var paginator;
+            $(document).ready(function () {
+                $("input[type='radio']").on("click", function () {
+                    var approach = $(this).attr('data');
+                    options = {
+                        recodsPerPage: 10,
+                        paginationType: paginationTypeObject.arrowApproach,
+                        searchURL: 'Home/SearchResult',
+                        paginationURL: 'Home/PaginationResult',
+                        buttonsCount: $('#no_of_buttons').val()
+                    };
+                    if (approach == 0) {
+                        options.paginationType = paginationTypeObject.arrowApproach;
+                        $('#nob').hide();
+                    }
+                    else {
+                        options.paginationType = paginationTypeObject.buttonApproch;
+                        $('#nob').show();
+                    }
+                    paginator.destroy();
+                    paginator = new Paginator(options);
+                    paginator.paginate();
+                });
+                options = {
+                    recodsPerPage: 10,
+                    paginationType: paginationTypeObject.arrowApproach,
+                    searchURL: 'Home/SearchResult',
+                    paginationURL: 'Home/PaginationResult',
+                    buttonsCount: 8
+                };
+                paginator = new Paginator(options);
+                paginator.paginate();
+                $('#no_of_buttons').on('keyup blur', function (e) {
+                    if ($(this).val() == '') return;
+                    if (isNaN($(this).val()) || $(this).val() == 0) $(this).val(5);
+                    $('#btnApp').click();
+                });
+                $('#nob').hide();
+            });
+        </script>
+    </div>
+</body>
+</html>

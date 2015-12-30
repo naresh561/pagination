@@ -50,7 +50,7 @@ input[type="button"]:disabled {
 	border-color: #ccc;
 }
 
-input[type='text'] {
+input[type='text'],input[type='number'] {
 	width: 130px;
 	height: 30px;
 	padding: 6px 12px;
@@ -165,6 +165,15 @@ td i{
 					<tbody>
 					</tbody>
 				</table>
+				<hr style="margin-top:100px;"/>
+				<div>
+					<div class="onoffswitch">
+						Style : Arrow Approach : <input type="radio" name="onoffswitch" class="onoffswitch-checkbox" data=0 checked> || Button Approach : <input id="btnApp" type="radio" name="onoffswitch" class="onoffswitch-checkbox" data=1>
+					</div>
+					<div id="nob">
+					Number of Buttons : <input type="number" id="no_of_buttons" value="5"/>
+					</div>
+				</div>
 			</div>
 		</form>
 	<footer>
@@ -176,16 +185,44 @@ td i{
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <script src="js/pagination.js"></script>
 <script type="text/javascript">
+var paginator;
 $(document).ready(function(){
+	$("input[type='radio']").on("click",function(){
+		var approach = $(this).attr('data');
+		options = {
+			recodsPerPage : 10,
+			paginationType : paginationTypeObject.arrowApproach,
+			searchURL : 'ajax/searchstudents.php',
+			paginationURL : 'ajax/getstudentsdata.php',
+			buttonsCount : $('#no_of_buttons').val()
+		};
+		if(approach == 0){
+			options.paginationType = paginationTypeObject.arrowApproach;
+			$('#nob').hide();
+		}
+		else{
+			options.paginationType = paginationTypeObject.buttonApproch;
+			$('#nob').show();
+		}
+		paginator.destroy();
+		paginator = new Paginator(options);
+		paginator.paginate();
+	});
 	options = {
 		recodsPerPage : 10,
-		paginationType : 0,
+		paginationType : paginationTypeObject.arrowApproach,
 		searchURL : 'ajax/searchstudents.php',
 		paginationURL : 'ajax/getstudentsdata.php',
 		buttonsCount : 8
 	};
-	var paginator = new Paginator(options);
+	paginator = new Paginator(options);
 	paginator.paginate();
+	$('#no_of_buttons').on('keyup blur',function(e) {
+		if($(this).val() == '' || $(this).val() == paginator.buttonsCount) return;
+		if (isNaN($(this).val()) || $(this).val() == 0) $(this).val(5);
+		$('#btnApp').click();
+	});
+	$('#nob').hide();
 });
 </script>
 </html>

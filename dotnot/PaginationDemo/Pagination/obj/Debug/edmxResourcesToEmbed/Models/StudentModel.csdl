@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="StudentsModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="newstudent">
+    <Key>
+      <PropertyRef Name="id" />
+      <PropertyRef Name="rollnumber" />
+      <PropertyRef Name="first_name" />
+      <PropertyRef Name="last_name" />
+      <PropertyRef Name="email" />
+      <PropertyRef Name="gender" />
+      <PropertyRef Name="marks" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="rollnumber" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="first_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="last_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="email" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="gender" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="marks" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityContainer Name="StudentsEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="newstudents" EntityType="Self.newstudent" />
+  </EntityContainer>
+</Schema>
