@@ -4,12 +4,12 @@
 <head>
 <meta charset="UTF-8" />
 <title>Pagination</title>
-<script src="js/jquery-2.0.3.min.js"></script>
 <link
 	href='https://fonts.googleapis.com/css?family=Roboto:300,700&amp;subset=latin,latin-ext'
-	rel='stylesheet' type='text/css'>
+	rel='stylesheet' type='text/css' />
 <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css" />
-<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="js/jquery.mobile-1.4.5.min.css" />
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <style>
 html, body {
@@ -17,6 +17,10 @@ html, body {
 	padding: 0;
 	font-family: 'Roboto-Regular';
 	background-color: #f2f2f2;
+}
+.slider-range{
+  width:20%;
+  margin-left: 15px;
 }
 
 input[type='button'] {
@@ -122,7 +126,7 @@ tbody tr:hover, thead tr td:hover {
 	background-color: rgba(28, 183, 236, 0.10);
 }
 
-.search_fields {
+.search_fields{
 	padding: 10px;
 	border-top: 1px solid #cbcbcb;
 	border-bottom: 1px solid #cbcbcb;
@@ -159,7 +163,7 @@ td i{
 							<td class="sortable searchable" data="last_name">Last Name</td>
 							<td class="sortable searchable" data="email">Email</td>
 							<td data="gender">Gender</td>
-							<td class="sortable searchable" data="marks">Marks</td>
+							<td class="setRange sortable" data="marks">Marks</td>
 						</tr>
 					</thead>
 					<tbody>
@@ -168,7 +172,7 @@ td i{
 				<hr style="margin-top:100px;"/>
 				<div>
 					<div class="onoffswitch">
-						Style : Arrow Approach : <input type="radio" name="onoffswitch" class="onoffswitch-checkbox" data=0 checked> || Button Approach : <input id="btnApp" type="radio" name="onoffswitch" class="onoffswitch-checkbox" data=1>
+						Style : Arrow Approach : <input type="radio" name="onoffswitch" class="onoffswitch-checkbox" data=0 checked /> || Button Approach : <input id="btnApp" type="radio" name="onoffswitch" class="onoffswitch-checkbox" data=1 />
 					</div>
 					<div id="nob">
 					Number of Buttons : <input type="number" id="no_of_buttons" value="5"/>
@@ -182,6 +186,7 @@ td i{
 	</div>
 </body>
 <script src="js/jquery-2.0.3.min.js"></script>
+<script src="js/jquery-ui-1.8.24.min.js"></script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <script src="js/pagination.js"></script>
 <script type="text/javascript">

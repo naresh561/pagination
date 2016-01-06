@@ -15,6 +15,8 @@ function Paginator(options){
 	this.totalRecords = 0;
 	this.currentPageNo = 1;
 	this.values = {};
+	this.values.range = {};
+	this.values.israngeChanged = false;
 	this.totalPagescount = 0;
 	this.paginate = init;
 	this.getValues = getValues;
@@ -49,7 +51,6 @@ function Paginator(options){
 	this.target = "";
 }
 function init(){
-	console.log("init Called");
 	var object = this;
 	$table = $('.sortable,.searchable').parentsUntil( $( "table" )).parent();
 	$($table).has('thead').addClass('pagination_table');
@@ -59,17 +60,20 @@ function init(){
 	$(".searchable").each(function(){
 		searchfieldsgenerationstring += $(this).html() +' <input type="text" data="'+$(this).attr('data')+'" class="change_input"/> ';
 	});
-	
+	var rangefieldsgenerationstring = "";
+	$(".setRange").each(function () {
+	    object.values.range[$(this).attr('data')] = {"min":0,"max":500};
+	    rangefieldsgenerationstring += $(this).html() + '<div class="slider-range" data="' + $(this).attr('data') + '">min : <input type="text" style="width:30%;margin-top:15px;" disabled/> max : <input type="text" style="width:30%;margin-top:15px;" disabled/></div>';
+	});
 	var searchfieldsdiv = "";
 	if(searchfieldsgenerationstring != "")
 		searchfieldsdiv = '<div id="nav1" class="search_fields" style="margin-bottom: 10px;"><p style="text-align: center;margin:0 0 10px 0;">Search criteria</p><span>'+searchfieldsgenerationstring+'</span></div><div class="searchbuttons" style="margin-bottom: 10px;float: right;margin-right: 10px;"><input id="reset" type="button" style="margin-right: 10px;" value="Reset" disabled /><input type="button" id="search_button" value="Search" disabled/></div><div class="clr"></div>';
-	var fields = '<div id="search-div">' +searchfieldsdiv+'</div><div class="clr"/><div id="spinner_div"></div>'+
-	'<div id="pagination-div" style="margin-bottom: 10px;float: right;margin-right:10px;margin-top:2px;">'+paginationfieldsgenerationstring+'</div>';
+	var fields = '<div id="search-div">' + searchfieldsdiv + '</div><div class="rangeFields" style="margin-left: 10px;margin-bottom:30px;">' + rangefieldsgenerationstring + '</div><div class="clr"/><div id="spinner_div"></div>' +
+	'<div id="pagination-div" style="margin-bottom: 45px;float: right;margin-right:150px;margin-top:-58px;">' + paginationfieldsgenerationstring + '</div>';
 	$(fields).insertBefore($('.pagination_table'));
-	object.target = document.getElementById('spinner_div');
+	object.target = $('.pagination_table')[0];
 	$('.change_input').unbind();
 	$('.change_input').bind('change keyup',function(e){
-		console.log("change input Called");
 		if (e.which == 13) {
 			e.preventDefault();
 			$('#search_button').click();
@@ -199,26 +203,56 @@ function pagination(pageno) {
 }
 // Searching
 function searching() {
-	var object = this;
+    var object = this;
+    console.log(object);
 	$(".sortable").find('i').remove();
 	object.values.orderby = "";
 	object.values.ordertype = "";
 	$(".sortable").removeClass('sort');
 	object.spinner.spin(object.target);
 	$("#pagination-div").show();
+	if (object.values.israngeChanged) {
+	    $(".slider-range").each(function () {
+	        object.values.range[$(this).attr('data')].min =  $($(this).children()[0]).val();
+	        object.values.range[$(this).attr('data')].max = $($(this).children()[1]).val();
+	    });
+	}
 	var jsondata = object.getValues();
 	$.ajax({
 		url : object.searchURL,
 		data : jsondata,
 		type: "POST",
-		dataType : "json",
-		success : function(result) {
-			object.totalRecords = result.data;
+		dataType: "json",
+		success: function (result) {
+			object.totalRecords = result.data.count;
 			if(object.totalRecords > 0){
 				if(object.totalRecords < 10)	{
 					$('#no_of_records').val(object.totalRecords);
 					object.recodsPerPage = object.totalRecords;
 				}
+				if (!object.values.israngeChanged) {
+				    $(".slider-range").each(function () {
+				        object.values.range[$(this).attr('data')].min = result.data[$(this).attr('data')].min;
+				        object.values.range[$(this).attr('data')].max = result.data[$(this).attr('data')].max;
+				        console.log($(this).children()[0]);
+				        $($(this).children()[0]).val(result.data[$(this).attr('data')].min);
+				        $($(this).children()[1]).val(result.data[$(this).attr('data')].max);
+				        $(this).slider({
+				            range: true,
+				            min: parseInt(result.data[$(this).attr('data')].min),
+				            max: parseInt(result.data[$(this).attr('data')].max),
+				            values: [parseInt(result.data[$(this).attr('data')].min), parseInt(result.data[$(this).attr('data')].max)],
+				            slide: function (event, ui) {
+				                $($(this).children()[0]).val(ui.values[0]);
+				                $($(this).children()[1]).val(ui.values[1]);
+				                object.values.israngeChanged = true;
+				                $("#reset").attr('disabled', false);
+				                $("#search_button").attr('disabled', false);
+				            }
+				        });
+				    });
+				}
+				object.values.israngeChanged = false;
 				object.totalPagescount = Math.ceil(parseInt(object.totalRecords) / $('#no_of_records').val());
 				$(".sortable").append(' <i class="fa fa-sort"></i>');
 				$(".sortable").addClass('sort');
@@ -250,7 +284,8 @@ function searching() {
 				$("#pagination-div").hide();
 			}
 		},
-		error : function(error) {
+		error: function (error) {
+		    console.log(error);
 			object.spinner.stop();
 		}
 	});
@@ -292,5 +327,5 @@ function appendRow(object) {
 	classObject.spinner.stop();
 }
 function destroy() {
-	$('.search_fields,#pagination-div,.searchbuttons,#loadingimage,.pagination,.fa').remove();
+    $('.search_fields,#pagination-div,.searchbuttons,#loadingimage,.pagination,.fa,.rangeFields').remove();
 }
