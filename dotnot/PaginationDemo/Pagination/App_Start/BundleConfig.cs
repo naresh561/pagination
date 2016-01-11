@@ -10,7 +10,9 @@ namespace Pagination
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js",
-                        "~/Scripts/pagination.js"));
+                        //"~/Scripts/jquery-ui-1.8.24.min.js",
+                        "~/Scripts/pagination.js"
+                        ));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
                         "~/Scripts/jquery-ui-{version}.js"));
@@ -40,7 +42,8 @@ namespace Pagination
                         "~/Content/themes/base/jquery.ui.progressbar.css",
                         "~/Content/themes/base/jquery.ui.theme.css",
                         "~/Content/themes/base/bootstrap/css/bootstrap*",
-                        "~/Content/themes/base/font-awesome/css/font-*"));
+                        "~/Content/themes/base/font-awesome/css/font-*",
+                        "~/Content/themes/base/jquery.mobile-1.4.5.min.css"));
         }
     }
 }

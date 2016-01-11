@@ -89,6 +89,7 @@ namespace Pagination.Models
                     case "first_name": return first_name;
                     case "last_name": return last_name;
                     case "email": return email;
+                    case "marks": return marks;
                     /* fixed default */
                     default: return rollnumber;
                 }

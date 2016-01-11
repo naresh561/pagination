@@ -27,7 +27,8 @@ class dbOperations extends configuration{
 			$result = $objConnection->query( $selectQuery.$search_conditions );
 			$result = mysqli_fetch_assoc($result);
 			$data['count'] = $result['count'];
-			foreach ($getCountOffields as $fields => $valueArray){ $data[$fields] = array("min"=> $result[$fields.'__min'],"max"=> $result[$fields.'__max']);
+			$data['range'] = array();
+			foreach ($getCountOffields as $fields => $valueArray){ array_push($data['range'],array("field" => $fields ,"min"=> $result[$fields.'__min'],"max"=> $result[$fields.'__max']));
 			}
 			return $data;
 		}

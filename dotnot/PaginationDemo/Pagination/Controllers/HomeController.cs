@@ -28,10 +28,25 @@ namespace Pagination.Controllers
                     var students = se.newstudents.Where(s => s.first_name.Contains(ss.first_name) && s.last_name.Contains(ss.last_name) && s.email.Contains(ss.email)
                         && s.rollnumber.Contains(ss.rollnumber)
                         ).ToList();
-
-                    count = students.Count();
+                    if (ss.israngeChanged)
+                    {
+                        foreach (var item in ss.range)
+                        {
+                            students = students.Where(s => item.min <= (int)s[item.field] && (int)s[item.field] <= item.max).ToList();
+                        }
+                    }
+                    outputResult o = new outputResult();
+                    o.count = students.Count();
+                    foreach (var item in ss.range)
+                    {
+                        o.range.Add(new Range { 
+                            field = item.field,
+                            min = (int)students.Min(s => s[item.field]),
+                            max = (int)students.Max(s => s[item.field])
+                        });
+                    }
                     r.status = 1;
-                    r.data = count;
+                    r.data = o;
 
                 }
             }
@@ -55,6 +70,10 @@ namespace Pagination.Controllers
                     var students = se.newstudents.Where(s => s.first_name.Contains(ss.first_name) && s.last_name.Contains(ss.last_name) && s.email.Contains(ss.email)
                         && s.rollnumber.Contains(ss.rollnumber)
                         ).ToList();
+                    foreach (var item in ss.range)
+                    {
+                        students = students.Where(s => item.min <= (int)s[item.field] && (int)s[item.field] <= item.max).ToList();
+                    }
                     r.status = 1;
                     r.data = students.GetRange((ss.pageno - 1) * ss.perpage, ss.perpage);
                     if (ss.orderBy != null)
@@ -62,7 +81,6 @@ namespace Pagination.Controllers
                         if (ss.orderType.ToLower() == "asc") r.data = students.GetRange((ss.pageno - 1) * ss.perpage, ss.perpage).OrderBy(s => s[ss.orderBy]);
                         else r.data = students.GetRange((ss.pageno - 1) * ss.perpage, ss.perpage).OrderByDescending(s => s[ss.orderBy]);
                     }
-
                 }
             }
             catch(Exception e)
@@ -75,12 +93,31 @@ namespace Pagination.Controllers
         }
     }
 
+    public class outputResult
+    {
+        public outputResult()
+        {
+            range = new List<Range>();
+        }
+        public List<Range> range { get; set; }
+        public int count { get; set; }
+    }
+
     public class jsonstudent : newstudent
     {
         public string orderBy { get; set; }
         public string orderType { get; set; }
         public int pageno { get; set; }
         public int perpage { get; set; }
+        public List<Range> range { get; set; }
+        public bool israngeChanged { get; set; }
+    }
+
+    public class Range
+    {
+        public string field { get; set; }
+        public int min { get; set; }
+        public int max { get; set; }
     }
 
     public class Result
