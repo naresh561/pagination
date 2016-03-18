@@ -389,5 +389,5 @@ function appendRow(object) {
     classObject.spinner.stop();
 }
 function destroy() {
-    $('.search_fields,#pagination-div,.searchbuttons,#loadingimage,.pagination,.fa,.rangeFields').remove();
+    $('.search_fields,#pagination-div,.searchbuttons,#loadingimage,.pagination,.fa,.rangeFields,.div_selectable').remove();
 }

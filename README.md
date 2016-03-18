@@ -4,7 +4,7 @@ USAGE:
 
 1. Simply add Pagination.js (and other js files too)to your page. 
 2. add a class "searchable" or "sortable" or both to your table header.
-3. add setRange for numeric data types.
+3. add setRange for numeric data types. add selectable to prompt the user with certain uniqe amount of data. 
 4. add data attr to each header in such a way that the value should be a key in json data.
 5. difine options object 
 
