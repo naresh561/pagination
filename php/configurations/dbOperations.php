@@ -44,11 +44,11 @@ class dbOperations extends configuration{
 			}
 			if(!$isselectionChanged){
 				foreach(array_keys($selectableFilds) as $key){
-					$selectQuery = "SELECT DISTINCT $key FROM $this->tableName ";
+					$selectQuery = "SELECT $key,count($key) as count FROM $this->tableName";
 					$objConnection = $this->Connect();
-					$result = $objConnection->query( $selectQuery.$search_conditions );
+					$result = $objConnection->query( $selectQuery.$search_conditions." group by $key" );
 					$newarray = array();
-					while($row = mysqli_fetch_assoc($result)) array_push($newarray,$row[$key]);
+					while($row = mysqli_fetch_assoc($result)) array_push($newarray,array($row[$key],$row['count']));
 					$data['selectables'][$key] = $newarray;
 				}
 			}

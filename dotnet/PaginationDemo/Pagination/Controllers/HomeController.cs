@@ -47,11 +47,18 @@ namespace Pagination.Controllers
                     {
                         foreach (var item in ss.selectables)
                         {
-                            var tempdata = students.Select(s => s[item.key]).ToList().Distinct().ToList();
-                            List<string> sampledata = new List<string>();
+                            var tempdata = students.GroupBy(s => s[item.key]).Select(g => new{
+                                key = g.Key,
+                                count = g.Count()
+                            }
+                            ).ToList().Distinct().ToList();
+                            List<string[]> sampledata = new List<string[]>();
                             foreach (var temp in tempdata)
                             {
-                                sampledata.Add(temp.ToString());
+                                string[] tempArray = new string[2];
+                                tempArray[0] = temp.key.ToString();
+                                tempArray[1] = temp.count.ToString();
+                                sampledata.Add(tempArray);
                             }
                             o.selectables.Add(item.key, sampledata);
                         }
@@ -124,11 +131,11 @@ namespace Pagination.Controllers
         public outputResult()
         {
             range = new List<Range>();
-            selectables = new Dictionary<string, List<string>>();
+            selectables = new Dictionary<string, List<string[]>>();
         }
         public List<Range> range { get; set; }
         public int count { get; set; }
-        public Dictionary<string,List<string>> selectables {get; set;}
+        public Dictionary<string, List<string[]>> selectables { get; set; }
     }
 
     public class jsonstudent : newstudent

@@ -300,9 +300,9 @@ function searching() {
 						var key = object.values.selectables[i].key;
 						var checkboxesString = "";
 						for(var j=0; j< result.data.selectables[key].length;j++){
-							var data = result.data.selectables[key][j];
-							//checkboxesString += "<input type='checkbox' class='selectablecheckbox' data="+key+" value='"+data+"'>"+data+"";
-							checkboxesString += '<input class="checkbox-custom selectablecheckbox" type="checkbox" value="'+data+'" id="'+data+'" data="'+key+'" /><label for="'+data+'" style = "font-weight: 100 !important;" class="checkbox-custom-label">'+data+'</label>';
+						    var data = result.data.selectables[key][j];
+						    console.log(data);
+							checkboxesString += '<input class="checkbox-custom selectablecheckbox" type="checkbox" value="' + data[0] + '" id="' + data[0] + '" data="' + key + '" /><label for="' + data[0] + '" style = "font-weight: 100 !important;" class="checkbox-custom-label">' + data[0] + " (" + data[1] + ")" + '</label>';
 						}
 						$('.select_'+key).html('<b>'+key+'</b>'+checkboxesString);
 						$('.selectablecheckbox').unbind();
